@@ -13,6 +13,7 @@
 /* local headers */
 #include "png_export.h"
 #include "graphing.h"
+#include "sound_io.h"
 
 #define PI 3.1415926535897932384626433832795
 #define TAU 6.283185307179586476925286766559
@@ -44,10 +45,12 @@ int main(int argc, char **argv) {
 	p = fftw_plan_dft_1d(width, in, out, FFTW_FORWARD, FFTW_ESTIMATE);
 
 	/* populate the in array */
+	WAVFile *wp = loadWAVFile("samples/sine1000.wav");
 	for (int i = 0; i < width; ++i) {
-		in[i][0] = sin(TAU /44100 * i * 1000);
+		in[i][0] = ((int16_t*)(wp->data))[i] / 65536.0;
 		in[i][1] = 0.0;
 	}
+	destroyWAVFile(wp);
 	
 	fftw_execute(p);	/* where the fun happens */
 
@@ -55,7 +58,7 @@ int main(int argc, char **argv) {
 	ImageBuf image = newImage(height, width);
 	fillImageRGBA(image, 0xff, 0xff, 0xff, 0xff);
 	Pixel color = {200, 200, 200, 255};
-	drawGrid(image, 100, 100, color);
+	//drawGrid(image, 100, 100, color);
 	
 	/* and plot our data */
 	color.r = 255; color.g = 0; color.b = 0;

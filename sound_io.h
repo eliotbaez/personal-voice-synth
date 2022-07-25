@@ -3,52 +3,32 @@
 #include <stdint.h>
 
 #include <fftw3.h>
-#include <sndfile.h>
 
 #ifndef SOUND_IO_H
 #define SOUND_IO_H
 
 struct WAVHeader {
-	char signature[4];		/* 4 byte file signature */
-	union {
-		uint32_t integer;
-		unsigned char bytes[4];
-	} filesize;				/* total file size */
-	char filetypeHeader[4];	/* should be "WAVE" */
-	char fmtChunkMarker[4];	/* should be "fmt\0" */
-	union {
-		uint32_t integer;
-		unsigned char bytes[4];
-	} formatDataLength;		/* size of everything before this */
-	union {
-		uint16_t integer;
-		unsigned char bytes[2];
-	} formatType;			/* type of format (1 = PCM) */
-	union {
-		uint16_t integer;
-		unsigned char bytes[2];
-	} channels;				/* number of channels */
-	union {
-		uint32_t integer;
-		unsigned char bytes[4];
-	} sampleRate;			/* samples per second */
-	union {
-		uint32_t integer;
-		unsigned char bytes[4];
-	} byterate;				/* total byterate of the file */
-	union {
-		uint16_t num;
-		unsigned char bytes[2];
-	} totalBytesPerSample;	/* includes both channels */
-	union {
-		uint16_t num;
-		unsigned char bytes[2];
-	} bitsPerSample;		/* bits per sample */
+	char signature[4];			/* 4 byte file signature */
+	uint32_t filesize;			/* total file size */
+	char filetypeHeader[4];		/* should be "WAVE" */
+	char fmtChunkMarker[4];		/* should be "fmt\0" */
+	uint32_t formatDataLength;	/* size of everything before this */
+	uint16_t formatType;		/* type of format (1 = PCM) */
+	uint16_t channels;			/* number of channels */
+	uint32_t sampleRate;		/* samples per second */
+	uint32_t byteRate;			/* total byterate of the file */
+	uint16_t totalBytesPerSample;	/* includes both channels */
+	uint16_t bitsPerSample;		/* bits per sample */
 	char dataChunkHeader[4];	/* should be "data" */
-	union {
-		uint32_t num;
-		unsigned char bytes[4];
-	} dataChunkSize;		/* size of the sound data */
+	uint32_t dataChunkSize;		/* size of the sound data */
 };
+
+typedef struct {
+	struct WAVHeader header;
+	void *data;
+} WAVFile;
+
+WAVFile *loadWAVFile(const char *filename);
+void destroyWAVFile(WAVFile *wp);
 
 #endif /* SOUND_IO_H */
