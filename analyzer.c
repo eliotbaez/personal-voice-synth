@@ -1,20 +1,23 @@
-#define _USE_MATH_DEFINES
-#include <math.h>
+/* standard headers */
 #include <stdio.h>
-#include <fftw3.h>
+#include <math.h>
 #include <string.h>
 #include <stdlib.h>
+
+/* extra libraries */
+#include <fftw3.h>
 #include <png.h>
-
-#include "png_export.h"
-#include "graphing.h"
-
 /* possibly: */
 //#include <zlib.h>
+
+/* local headers */
+#include "png_export.h"
+#include "graphing.h"
 
 #define PI 3.1415926535897932384626433832795
 #define TAU 6.283185307179586476925286766559
 /* 44100 samples = 1 second */
+
 
 int main(int argc, char **argv) {
 
@@ -57,6 +60,7 @@ int main(int argc, char **argv) {
 	/* and plot our data */
 	color.r = 255; color.g = 0; color.b = 0;
 	plotSpectrumAbsolute(image, image.width, out, color);
+	image.width /= 2;
 	int r = export_png("absolute.png", image);
 
 	destroyImage(image);

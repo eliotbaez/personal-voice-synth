@@ -5,8 +5,9 @@
 #include <stdlib.h>
 #include <math.h>
 #include <string.h>
-#include <png.h>
 #include <stdint.h>
+
+#include <png.h>
 
 void writeRowCallback(png_structp pngPtr, png_uint_32 row, int pass);
 

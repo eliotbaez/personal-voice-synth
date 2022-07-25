@@ -2,7 +2,9 @@
 #define GRAPHING_H
 
 #include <stdlib.h>
+
 #include <fftw3.h>
+
 #include "png_export.h"
 
 int plotSpectrumAbsolute(ImageBuf image, size_t n, fftw_complex *arr, Pixel color);

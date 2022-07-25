@@ -2,10 +2,11 @@
 #include <stdlib.h>
 #include <math.h>
 #include <string.h>
-#include <png.h>
 #include <stdint.h>
-#include "png_export.h"
 
+#include <png.h>
+
+#include "png_export.h"
 
 ImageBuf newImage(size_t height, size_t width) {
 	ImageBuf image;
@@ -55,7 +56,6 @@ int export_png(const char *filename, ImageBuf image) {
 		perror(filename);
 		return EXIT_FAILURE;
 	}
-
 
 	/* create PNG data structures */
 	png_structp pngPtr = png_create_write_struct(
