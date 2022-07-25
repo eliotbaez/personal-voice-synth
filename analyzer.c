@@ -5,13 +5,13 @@
 #include <string.h>
 #include <stdlib.h>
 #include <png.h>
+
 #include "png_export.h"
+#include "graphing.h"
 
 /* possibly: */
 //#include <zlib.h>
 
-#define max(a, b) ((a) > (b) ? (a) : (b))
-#define min(a, b) ((a) < (b) ? (a) : (b))
 #define PI 3.1415926535897932384626433832795
 #define TAU 6.283185307179586476925286766559
 /* 44100 samples = 1 second */
@@ -42,7 +42,6 @@ int main(int argc, char **argv) {
 
 	/* populate the in array */
 	for (int i = 0; i < width; ++i) {
-		/* 1024 hz sample rate, 10hz signal */
 		in[i][0] = sin(TAU /44100 * i * 1000);
 		in[i][1] = 0.0;
 	}
@@ -52,27 +51,19 @@ int main(int argc, char **argv) {
 	/* create an image */
 	ImageBuf image = newImage(height, width);
 	fillImageRGBA(image, 0xff, 0xff, 0xff, 0xff);
+	Pixel color = {200, 200, 200, 255};
+	drawGrid(image, 100, 100, color);
 	
 	/* and plot our data */
-	for (int i = 0; i < image.width; ++i) {
-		Pixel tmp = {0, 0, 0, 0xff};
-		double y = sqrt(out[i][0] * out[i][0] + out[i][1] * out[i][1]);
-		int py = (int)round(y);
-
-		image.rowPtrs[height - 1][i] = tmp; /* x axis */
-		/* fill all pixels below with red */
-		tmp.r = 0xff;
-		for (int row = height - 1 - min(py, height - 1); row < height - 1; ++row) {
-			image.rowPtrs[row][i] = tmp;
-		}
-	}
-
-	int r = export_png("example.png", image);
+	color.r = 255; color.g = 0; color.b = 0;
+	plotSpectrumAbsolute(image, image.width, out, color);
+	int r = export_png("absolute.png", image);
 
 	destroyImage(image);
 	fftw_destroy_plan(p);
 	fftw_free(in);
 	fftw_free(out);
 
+	/* will fail if either PNG export fails */
 	return r;
 }
