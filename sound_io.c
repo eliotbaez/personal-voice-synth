@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdint.h>
+#include <string.h>
 #include "sound_io.h"
 
 static void littleEndianify2b(uint16_t *numptr) {
@@ -89,4 +90,32 @@ WAVFile *loadWAVFile(const char *filename) {
 void destroyWAVFile(WAVFile *wp) {
 	free(wp->data);
 	free(wp);
+}
+
+void fprintWAVHeader(FILE *fp, WAVFile *wp) {
+	char buf[5];
+	buf[4] = '\0';
+
+	memcpy(buf, wp->header.signature, 4);
+	fprintf(fp, "Signature: %s\nFilesize: %u\n", buf, wp->header.filesize);
+	memcpy(buf, wp->header.filetypeHeader, 4);
+	fprintf(fp, "Filetype Header: %s\n", buf);
+	memcpy(buf, wp->header.fmtChunkMarker, 4);
+	fprintf(fp, "Format chunk marker: %s\n", buf);
+	fprintf(fp,
+		"Format data length: %u\n"
+		"Format type: %hu\n"
+		"Channels: %hu\n"
+		"Sample rate: %u\n"
+		"Byte rate: %u\n"
+		"Total bytes per sample: %hu\n"
+		"Bits per sample: %hu\n",
+		wp->header.formatDataLength,
+		wp->header.formatType,
+		wp->header.channels,
+		wp->header.sampleRate,
+		wp->header.byteRate,
+		wp->header.totalBytesPerSample,
+		wp->header.bitsPerSample
+	);
 }

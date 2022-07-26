@@ -76,6 +76,7 @@ int export_png(const char *filename, ImageBuf image) {
 	png_init_io(pngPtr, fp);
 	png_set_write_status_fn(pngPtr, NULL);
 	/* populate the info */
+	printf("image width is %zd\n", image.width);
 	png_set_IHDR(
 		pngPtr, infoPtr,
 		image.width, image.height, 8,

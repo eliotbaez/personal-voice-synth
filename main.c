@@ -21,7 +21,6 @@
 
 
 int main(int argc, char **argv) {
-
 	int height, width;
 	if (argc == 3) {
 		width = atoi(argv[1]);
@@ -45,7 +44,7 @@ int main(int argc, char **argv) {
 	p = fftw_plan_dft_1d(width, in, out, FFTW_FORWARD, FFTW_ESTIMATE);
 
 	/* populate the in array */
-	WAVFile *wp = loadWAVFile("samples/sine1000.wav");
+	WAVFile *wp = loadWAVFile("samples/sine_and_sawtooth.wav");
 	for (int i = 0; i < width; ++i) {
 		in[i][0] = ((int16_t*)(wp->data))[i] / 65536.0;
 		in[i][1] = 0.0;
@@ -71,6 +70,5 @@ int main(int argc, char **argv) {
 	fftw_free(in);
 	fftw_free(out);
 
-	/* will fail if either PNG export fails */
 	return r;
 }

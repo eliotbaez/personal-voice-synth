@@ -1,6 +1,8 @@
 test
 analyzer
+generate-spectrogram
 example.png
 absolute.png
+spectrogram.png
 .vscode/
 samples/

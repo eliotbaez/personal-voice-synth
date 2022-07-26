@@ -17,7 +17,7 @@ struct WAVHeader {
 	uint16_t channels;			/* number of channels */
 	uint32_t sampleRate;		/* samples per second */
 	uint32_t byteRate;			/* total byterate of the file */
-	uint16_t totalBytesPerSample;	/* includes both channels */
+	uint16_t totalBytesPerSample;	/* includes all channels */
 	uint16_t bitsPerSample;		/* bits per sample */
 	char dataChunkHeader[4];	/* should be "data" */
 	uint32_t dataChunkSize;		/* size of the sound data */
@@ -30,5 +30,7 @@ typedef struct {
 
 WAVFile *loadWAVFile(const char *filename);
 void destroyWAVFile(WAVFile *wp);
+
+void fprintWAVHeader(FILE *fp, WAVFile *wp);
 
 #endif /* SOUND_IO_H */
