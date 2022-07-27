@@ -13,6 +13,7 @@
 ImageBuf createSpectrogram(const WAVFile * wp, int samplesPerFrame, Pixel (*colorFunc)(fftw_complex));
 
 Pixel thresholdBlack(fftw_complex z);
+Pixel colorFuncDecibelBlackToWhite(fftw_complex z);
 Pixel colorFuncWhiteToBlack(fftw_complex z);
 Pixel colorFuncBlackToWhite(fftw_complex z);
 

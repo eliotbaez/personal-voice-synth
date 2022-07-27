@@ -1,3 +1,4 @@
+#define _USE_MATH_DEFINES /* for math constants */
 /* standard headers */
 #include <stdio.h>
 #include <math.h>
@@ -16,9 +17,10 @@
 #include "sound_io.h"
 #include "spectrogram.h"
 
-#define PI 3.1415926535897932384626433832795
-#define TAU 6.283185307179586476925286766559
-/* 44100 samples = 1 second */
+double decibelsOfNormalized(double a) {
+	/* equivalent to 10 * log_10(a) but more computer friendly */
+	return log2(a) * 20.0 * M_LN2 / M_LN10;
+}
 
 /* this is primarily for debugging */
 Pixel thresholdBlack(fftw_complex z) {
@@ -37,6 +39,30 @@ Pixel thresholdBlack(fftw_complex z) {
 	return color;
 }
 
+Pixel colorFuncDecibelBlackToWhite(fftw_complex z) {
+	Pixel color;
+	uint8_t value;
+	/* roughly the smallest decibel level we could have, assuming a
+	   normalized amplitude of 1/32768 (normalized meaning that Full
+	   Signal = 1) */
+	double const noisefloor = 90.0;
+
+	/* 0 should be white, we can make -noisefloor be black */
+	double dBFS = decibelsOfNormalized(hypot(z[0], z[1]));
+	if (dBFS > 0.0) {
+		value = 255;
+	} else if (dBFS < -noisefloor) {
+		value = 0;
+	} else {
+		/* value in range :D */
+		value = (uint8_t)round((dBFS + noisefloor) / noisefloor * 255.0);
+	}
+
+	color.r = color.g = color.b = value;
+	color.a = 255;
+	return color;
+}
+
 Pixel colorFuncWhiteToBlack(fftw_complex z) {
 	Pixel color;
 	uint8_t value; /* brightness value */
@@ -46,9 +72,9 @@ Pixel colorFuncWhiteToBlack(fftw_complex z) {
 	   check the bounds, however. */
 	double magnitude = hypot(z[0], z[1]);
 	if (magnitude <= 1.0) {
-		value = (uint8_t) round(255 * magnitude);
+		value = 255 - (uint8_t) round(255 * magnitude);
 	} else {
-		value = 255;
+		value = 0;
 	}
 
 	color.r = color.g = color.b = value;
@@ -117,14 +143,14 @@ ImageBuf createSpectrogram(const WAVFile *wp, int samplesPerFrame, Pixel (*color
 	for (int frame = 0; frame < totalFrames; ++frame) {
 		/* for each sample in the current frame */
 		for (int sample = 0; sample < samplesPerFrame; ++sample) {
-			in[sample][0] = ((int16_t*)(wp->data))[frame * samplesPerFrame + sample] / 65536.0;
+			in[sample][0] = ((int16_t*)(wp->data))[frame * samplesPerFrame + sample] / 32768.0;
 		}
 
 		fftw_execute(p);
-		/* "normalize" the output by dividing by the frame size */
+		/* "normalize" the output */
 		for (int i = 0; i < samplesPerFrame; ++i) {
-			out[i][0] /= 8;//samplesPerFrame;
-			out[i][1] /= 8;//samplesPerFrame;
+			out[i][0] *= 2.0 / samplesPerFrame;
+			out[i][1] *= 2.0 / samplesPerFrame;
 		}
 
 		/* now we can graph it :D */

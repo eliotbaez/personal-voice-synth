@@ -9,12 +9,12 @@
 
 int plotSpectrumAbsolute(ImageBuf image, size_t n, fftw_complex *arr, Pixel color) {
 	for (int i = 0; i < image.width; ++i) {
-		double y = sqrt(arr[i][0] * arr[i][0] + arr[i][1] * arr[i][1]);
+		double y = hypot(arr[i][0], arr[i][1]);
 		int py = (int)round(y);
 
 		/* fill all pixels below data point with color */
 		for (int row = image.height - 1 - min(py, image.height - 1);
-				row < image.height - 1; ++row) {
+				row < image.height; ++row) {
 			image.rowPtrs[row][i] = color;
 		}
 	}

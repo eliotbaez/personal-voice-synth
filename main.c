@@ -22,16 +22,21 @@
 
 int main(int argc, char **argv) {
 	int height, width;
-	if (argc == 3) {
-		width = atoi(argv[1]);
-		height = atoi(argv[2]);
+	if (argc == 4) {
+		width = atoi(argv[2]);
+		height = atoi(argv[3]);
 	} else {
-		fprintf(stderr, "usage: %s WIDTH HEIGHT\n", argv[0]);
+		fprintf(stderr, "usage: %s WAVFILE WIDTH HEIGHT\n", argv[0]);
 		return EXIT_FAILURE;
 	}
 
 	if (width < 1 || height < 1) {
 		fprintf(stderr, "HEIGHT and WIDTH must be greater than 0\n");
+		return EXIT_FAILURE;
+	}
+
+	WAVFile *wp = loadWAVFile(argv[1]);
+	if (wp == NULL) {
 		return EXIT_FAILURE;
 	}
 
@@ -44,14 +49,19 @@ int main(int argc, char **argv) {
 	p = fftw_plan_dft_1d(width, in, out, FFTW_FORWARD, FFTW_ESTIMATE);
 
 	/* populate the in array */
-	WAVFile *wp = loadWAVFile("samples/sine_and_sawtooth.wav");
 	for (int i = 0; i < width; ++i) {
-		in[i][0] = ((int16_t*)(wp->data))[i] / 65536.0;
+		in[i][0] = ((int16_t*)(wp->data))[i] / 32768.0;
 		in[i][1] = 0.0;
 	}
 	destroyWAVFile(wp);
 	
 	fftw_execute(p);	/* where the fun happens */
+
+	/* "normalize" the output */
+	for (int i = 0; i < width; ++i) {
+		out[i][0] *= 2.0 * height / width;
+		out[i][1] *= 2.0 * height / width;
+	}
 
 	/* create an image */
 	ImageBuf image = newImage(height, width);
