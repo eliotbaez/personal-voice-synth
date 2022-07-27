@@ -101,6 +101,55 @@ Pixel colorFuncBlackToWhite(fftw_complex z) {
 	return color;
 }
 
+void meanDemuxSamples(const void *muxed, fftw_complex *arr, size_t samples, int channels, int sampleSize) {
+	/* The maximum value of a signed integer of size sampleSize,
+	   multplied by the number of channels to calculate the mean.
+	   Multiplying by channels here saves us one division later.
+	   Division is generally more expensive than multiplication. */
+	double divisor = ((unsigned long)1 << (8 * sampleSize - 1)) * channels;
+	// printf("divisor=%lf\n", divisor);
+
+	switch (sampleSize) {
+	case 1:
+		for (size_t sample = 0; sample < samples; ++sample) {
+			arr[sample][0] = 0.0;
+			for (int c = 0; c < channels; ++c) {
+				arr[sample][0] += ((int8_t*)muxed)[sample * channels + c] / divisor;
+			}
+		}
+		break;
+	case 2:
+		for (size_t sample = 0; sample < samples; ++sample) {
+			arr[sample][0] = 0.0;
+			for (int c = 0; c < channels; ++c) {
+				arr[sample][0] += ((int16_t*)muxed)[sample * channels + c] / divisor;
+			}
+		}
+		break;
+	case 4:
+		for (size_t sample = 0; sample < samples; ++sample) {
+			arr[sample][0] = 0.0;
+			for (int c = 0; c < channels; ++c) {
+				arr[sample][0] += ((int32_t*)muxed)[sample * channels + c] / divisor;
+			}
+		}
+	}
+
+	return;
+
+	#if 0 /* this is under construction */
+	/* generalized version for any number of channels */
+	for (size_t sample = 0; sample < samples; ++sample) { /* each sample */
+		for (int c = 0; c < channels; ++c) { /* each channel within that sample */
+			for (int byte = 0; byte < sampleSize; ++byte) { /* each byte within that channel */
+
+			}
+			muxed[sampleSize * (sample * channels + c)];
+		}
+	}
+	#endif
+}
+
 ImageBuf createSpectrogram(const WAVFile *wp, int samplesPerFrame, Pixel (*colorFunc)(fftw_complex)) {
 	ImageBuf image = {
 		.height = 0,
@@ -130,23 +179,34 @@ ImageBuf createSpectrogram(const WAVFile *wp, int samplesPerFrame, Pixel (*color
 	/* create an image */
 	size_t totalFrames;
 	size_t totalSamples;
+	/* In reality this will not be the total samples in the file, but
+	   rather the total number of sets of samples, where the size of
+	   each set is equal to the number of channels. */
 	totalSamples = wp->header.dataChunkSize / wp->header.totalBytesPerSample;
 	size_t maxFreqBin = samplesPerFrame / 2;
 	/* yes we intend to use floor division */
 	totalFrames = totalSamples / samplesPerFrame;
-	fprintf(stderr, "total frames = %zd\n", totalFrames);
 
 	image = newImage(maxFreqBin, totalFrames);
 	fillImageRGBA(image, 0xff, 0xff, 0xff, 0xff);
 	
+	/* notify user if something is wrong */
+	if (wp->header.channels > 2) {
+		fprintf(stderr, "Looks like your file has more than 2 channels. "
+			"Will try to continue, but only mono and stereo are officially supported!\n");
+	}
+	if (wp->header.formatType != 1) {
+		fprintf(stderr, "Looks like your file doesn't use PCM samples. "
+			"This software only supports PCM samples right now!\n");
+	}
+
 	/* do FFT for each frame of the sound block */
 	for (int frame = 0; frame < totalFrames; ++frame) {
-		/* for each sample in the current frame */
-		for (int sample = 0; sample < samplesPerFrame; ++sample) {
-			in[sample][0] = ((int16_t*)(wp->data))[frame * samplesPerFrame + sample] / 32768.0;
-		}
-
+		/* demux the samples and place their mean in the in array */
+		meanDemuxSamples(wp->data + frame * samplesPerFrame, in, 
+			samplesPerFrame, wp->header.channels, wp->header.bitsPerSample / 8);
 		fftw_execute(p);
+
 		/* "normalize" the output */
 		for (int i = 0; i < samplesPerFrame; ++i) {
 			out[i][0] *= 2.0 / samplesPerFrame;

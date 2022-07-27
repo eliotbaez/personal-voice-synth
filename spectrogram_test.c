@@ -15,7 +15,7 @@ int main (int argc, char **argv) {
 		fprintf(stderr, "FRAMESIZE must be greater than 0\n");
 		return EXIT_FAILURE;
 	}
-	Pixel (*colorFunc)(fftw_complex) = colorFuncBlackToWhite;
+	Pixel (*colorFunc)(fftw_complex) = colorFuncDecibelBlackToWhite;
 	if (argc == 4) {
 		if (!strcmp(argv[3], "linear")) {
 			colorFunc = colorFuncBlackToWhite;
@@ -24,7 +24,7 @@ int main (int argc, char **argv) {
 		} else if (!strcmp(argv[3], "log")) {
 			colorFunc = colorFuncDecibelBlackToWhite;
 		} else {
-			fprintf(stderr, "Unknown color function \"%s\", defaulting to linear\n", argv[3]);
+			fprintf(stderr, "Unknown color function \"%s\", defaulting to logarithmic\n", argv[3]);
 		}
 	}
 
@@ -32,7 +32,7 @@ int main (int argc, char **argv) {
 	if (wp == NULL) {
 		return EXIT_FAILURE;
 	}
-	//fprintWAVHeader(stderr, wp);
+	fprintWAVHeader(stderr, wp);
 	ImageBuf image = createSpectrogram(wp, frameSize, colorFunc);
 	export_png("spectrogram.png", image);
 	destroyImage(image);
