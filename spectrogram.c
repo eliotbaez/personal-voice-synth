@@ -107,7 +107,6 @@ void meanDemuxSamples(const void *muxed, fftw_complex *arr, size_t samples, int 
 	   Multiplying by channels here saves us one division later.
 	   Division is generally more expensive than multiplication. */
 	double divisor = ((unsigned long)1 << (8 * sampleSize - 1)) * channels;
-	// printf("divisor=%lf\n", divisor);
 
 	switch (sampleSize) {
 	case 1:

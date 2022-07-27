@@ -1,7 +1,17 @@
-# configurable-synth
+# personal-voice-synth
 
 The plan is for this to be a voice synthesizer with the capability of
 being configured based on a profile of your own voice.
+
+There will be several components to this repository.
+
+1. The visualization tools. The spectrum viewer, the spectrogram, and
+anything else that makes it easier to write analysis code.
+2. The analyzer. This will be in charge of taking in sets of sound files
+to create a profile of your voice.
+3. The text comprehension system. This will probably consist of a 
+3. The synthesizer. This is the part that uses the voice profile to
+generate actual sounds.
 
 ## Voice Profiles
 
@@ -37,32 +47,32 @@ to take a look at a graphical Fourier Transform.
 
 ### reading the fourier transform image
 **bins are in units of cycles per sample period**
-sample rate = 1.024kHz = 1024 Sa/s
-F index is half of 
-(0->1023) / (1024 * 1/1024) 
+sample rate = 1.024kHz = 1024 Sa/s  
+F index is half of  
+(0->1023) / (1024 * 1/1024)  
 0->1023 hz
 
-sample rate = 2.048kHz = 2048 Sa/s
-F index is half of
-(0->2043) / 
+sample rate = 2.048kHz = 2048 Sa/s  
+F index is half of  
+(0->2043) /   
 
-sample rate = 44.1kHz = 44100 Sa/s
-Sample period = 1/44100 s
-F index is half of
+sample rate = 44.1kHz = 44100 Sa/s  
+Sample period = 1/44100 s  
+F index is half of  
 (0->44099) / 
 
-cycle per T
-1 / T
-1 / (1/Fs)
+cycle per T  
+1 / T  
+1 / (1/Fs)  
 unit = Fs
 
-N = number of sample points
-Fs = sample rate
-T = 1/Fs = sample period
-Fmax = Fs/2
-Fmin = 0
-Number of bins = number of sample points
-Bandwidth of each bin = Fmax/N
+N = number of sample points  
+Fs = sample rate  
+T = 1/Fs = sample period  
+Fmax = Fs/2  
+Fmin = 0  
+Number of bins = number of sample points  
+Bandwidth of each bin = Fmax/N 
 
 ## Synthesis
 
@@ -89,19 +99,19 @@ directly through the sound API.
 
 ### synthesizing a sine wave with real time frequency
 All trig functions are in radians  
-f = frequency  (Hz)
+f = frequency  (Hz)  
 Tau = 2 * Pi  
 t = time (s)  
-ts = time (Sa)
+ts = time (Sa)  
 A = amplitude (dimensionless)  
-Fs = sample (Sa/s)  
+Fs = sample (Sa/s) 
 
 Note that:  
 ts (Sa) = t (s) * Fs (Sa/s)  
-t (s) = ts (Sa) / ( Fs (Sa/s) )  
+t (s) = ts (Sa) / ( Fs (Sa/s) ) 
 
-s(t) = A * sin(Tau * t * f)
-s(ts) = A * sin(Tau * ts/Fs * f)
+s(t) = A * sin(Tau * t * f)  
+s(ts) = A * sin(Tau * ts/Fs * f) 
 
 Note that in the above two equations, phase is not necessarily preserved
 with discrete changes in frequency over time. See the section about
