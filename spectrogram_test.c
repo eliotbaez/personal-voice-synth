@@ -3,7 +3,7 @@
 
 #include "sound_io.h"
 #include "spectrogram.h"
-#include "png_export.h"
+#include "image_io.h"
 
 int main (int argc, char **argv) {
 	if (!(argc == 3 || argc == 4)) {

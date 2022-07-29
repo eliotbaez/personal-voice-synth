@@ -9,7 +9,10 @@ There will be several components to this repository.
 anything else that makes it easier to write analysis code.
 2. The analyzer. This will be in charge of taking in sets of sound files
 to create a profile of your voice.
-3. The text comprehension system. This will probably consist of a 
+3. The text comprehension system. This will probably consist of a word
+interpreter that uses English pronunciation "rules" to guess the
+pronunciation of a word/sentence, and a phoneme backend. Think DECTalk
+phonemes.
 3. The synthesizer. This is the part that uses the voice profile to
 generate actual sounds.
 
@@ -46,7 +49,7 @@ want to have to paste  text files into Excel or Desmos every time I want
 to take a look at a graphical Fourier Transform.
 
 ### reading the fourier transform image
-**bins are in units of cycles per sample period**
+**bins are in units of cycles per sample period**  
 sample rate = 1.024kHz = 1024 Sa/s  
 F index is half of  
 (0->1023) / (1024 * 1/1024)  
@@ -73,6 +76,33 @@ Fmax = Fs/2
 Fmin = 0  
 Number of bins = number of sample points  
 Bandwidth of each bin = Fmax/N 
+
+### Normalizing the Fourier transform
+To recover the actual amplitude, divide the Fourier transform by N/2.
+This is equivalent to multiplying by 2/N.
+
+Normalization means that a sine wave with frequency h and amplitude 1
+will show up as the data point at (f, 1).
+
+### Phase from the complex fourier transform
+       Im
+	  |
+	  |      . z = a + b*i
+	  |     /:
+	  |    / :
+      |   /  : b
+	  |  /   :
+	  | /phi :
+	  |/_____:________ Re
+	      a
+
+tan(phi) = b / a  =>  phi = arctan(b / a)  
+|z|sin(phi) = b  =>  phi = arcsin(b / |z|)  
+|z|cos(phi) = a  =>  phi = arccos(a / |z|)
+
+Maybe consider timing each of these methods to see which one is least
+computationally intense? Optimization isn't really a bottleneck right
+now, so just keep it in the back of your mind.
 
 ## Synthesis
 

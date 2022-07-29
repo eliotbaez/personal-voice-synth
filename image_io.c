@@ -6,7 +6,7 @@
 
 #include <png.h>
 
-#include "png_export.h"
+#include "image_io.h"
 
 ImageBuf newImage(size_t height, size_t width) {
 	ImageBuf image;

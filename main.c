@@ -11,7 +11,7 @@
 //#include <zlib.h>
 
 /* local headers */
-#include "png_export.h"
+#include "image_io.h"
 #include "graphing.h"
 #include "sound_io.h"
 

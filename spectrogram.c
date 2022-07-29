@@ -12,14 +12,20 @@
 //#include <zlib.h>
 
 /* local headers */
-#include "png_export.h"
+#include "image_io.h"
 #include "graphing.h"
 #include "sound_io.h"
 #include "spectrogram.h"
 
 double decibelsOfNormalized(double a) {
-	/* equivalent to 10 * log_10(a) but more computer friendly */
+	#if 0
+	/* equivalent to 20 * log_10(a) but more computer friendly */
 	return log2(a) * 20.0 * M_LN2 / M_LN10;
+	#else
+	/* the version of the above that doesn't make vscode's intellisense
+	   throw include errors */
+	return log10(a) * 20;
+	#endif
 }
 
 /* this is primarily for debugging */

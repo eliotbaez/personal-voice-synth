@@ -5,7 +5,7 @@
 
 #include <fftw3.h>
 
-#include "png_export.h"
+#include "image_io.h"
 
 int plotSpectrumAbsolute(ImageBuf image, size_t n, fftw_complex *arr, Pixel color);
 int plotSpectrumComplex(ImageBuf image, size_t n, fftw_complex *arr, Pixel (*colorFunc)(fftw_complex));

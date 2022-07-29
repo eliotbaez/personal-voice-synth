@@ -3,7 +3,7 @@
 
 #include <fftw3.h>
 
-#include "png_export.h"
+#include "image_io.h"
 #include "sound_io.h"
 
 #ifndef SPECTROGRAM_H
