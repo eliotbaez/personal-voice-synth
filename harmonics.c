@@ -3,7 +3,7 @@
 #include <string.h>
 #include <stdio.h>
 #include <math.h>
-#include <assert.h>
+#include <stdbool.h>
 
 #include <fftw3.h>
 
@@ -94,17 +94,22 @@ Harmonic *getHarmonics(double fundamental, fftw_complex const *ft,
 	}
 }
 
-void printHarmonicList(Harmonic *harmonics, int n) {
+void printHarmonicList(Harmonic *harmonics, int n, bool csvFormat) {
+	const char *format;
+	if (!csvFormat) {
+		format = "Harmonic % 2d:\tAmplitude %1.3lf; Phase %1.3lf rad\n";
+	} else {
+		format = "%d\t%.6lf\t%.6lf\n";
+	}
+
 	if (n >= 0) {
 		for (size_t i = 0; i < n; ++i) {
-			printf("Harmonic % 2zd:\tAmplitude %1.3f; Phase %1.3lf rad\n",
-				i, harmonics[i].amplitude, harmonics[i].phase);
+			printf(format, i, harmonics[i].amplitude, harmonics[i].phase);
 		}
 	} else {
 		for (size_t i = 0; ; ++i) {
 			if (harmonics[i].amplitude < 0.0) break;
-			printf("Harmonic % 2zd:\tAmplitude %1.3lf; Phase %1.3lf rad\n",
-				i, harmonics[i].amplitude, harmonics[i].phase);
+			printf(format, i, harmonics[i].amplitude, harmonics[i].phase);
 		}
 	}
 	end:

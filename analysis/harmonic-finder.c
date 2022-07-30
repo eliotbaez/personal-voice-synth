@@ -61,7 +61,7 @@ int main(int argc, char **argv) {
 	hp = getHarmonics(fundamental, out, samples, hp, -1, 1.0, wp->header.sampleRate);
 
 	/* output useful info */
-	printHarmonicList(hp, -1);
+	printHarmonicList(hp, -1, true);
 
 	free(hp);
 	fftw_destroy_plan(p);

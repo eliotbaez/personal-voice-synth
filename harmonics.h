@@ -1,5 +1,6 @@
 #include <stdlib.h>
 #include <stdint.h>
+#include <stdbool.h>
 
 #include <fftw3.h>
 
@@ -41,6 +42,6 @@ Harmonic *getHarmonics(
  * If n < 0, then will print all Harmonics until a Harmonic with a
  * negative amplitude is found. 
  */
-void printHarmonicList(Harmonic *harmonics, int n);
+void printHarmonicList(Harmonic *harmonics, int n, bool csvFormat);
 
 #endif /* HARMONICS_H */

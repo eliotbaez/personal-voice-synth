@@ -15,15 +15,6 @@
 #include "graphing.h"
 #include "sound_io.h"
 
-#define PI 3.1415926535897932384626433832795
-#define TAU 6.283185307179586476925286766559
-/* 44100 samples = 1 second */
-
-
-/*
- * TODO:
- * Check if WIDTH is greater than the total samples in the sound file
- */
 
 int main(int argc, char **argv) {
 	int height, width;
