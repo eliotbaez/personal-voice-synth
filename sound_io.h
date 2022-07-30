@@ -7,6 +7,13 @@
 #ifndef SOUND_IO_H
 #define SOUND_IO_H
 
+/*
+ * TODO:
+ * 
+ * Write a check function that reads the WAV header and checks the
+ * integrity of the file.
+ */
+
 struct WAVHeader {
 	char signature[4];			/* 4 byte file signature */
 	uint32_t filesize;			/* total file size */
@@ -18,7 +25,7 @@ struct WAVHeader {
 	uint32_t sampleRate;		/* samples per second */
 	uint32_t byteRate;			/* total byterate of the file */
 	uint16_t totalBytesPerSample;	/* includes all channels */
-	uint16_t bitsPerSample;		/* bits per sample */
+	uint16_t bitsPerSample;		/* bits per individual sample */
 	char dataChunkHeader[4];	/* should be "data" */
 	uint32_t dataChunkSize;		/* size of the sound data */
 };

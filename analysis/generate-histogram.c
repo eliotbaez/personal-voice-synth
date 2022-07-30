@@ -44,6 +44,14 @@ int main(int argc, char **argv) {
 	if (wp == NULL) {
 		return EXIT_FAILURE;
 	}
+	{
+		size_t totalSamples = wp->header.dataChunkSize / wp->header.totalBytesPerSample;
+		if (totalSamples < width) {
+			fprintf(stderr, "WAV file not long enough, choose a smaller sample size\n");
+			fprintf(stderr, "Hint: This file contains %zd samples\n", totalSamples);
+			return EXIT_FAILURE;
+		}
+	}
 
 	fftw_complex *in, *out;
 	fftw_plan p;
