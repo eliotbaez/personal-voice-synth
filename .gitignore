@@ -1,6 +1,9 @@
 test
-analyzer
+
+histogram
 generate-spectrogram
+harmonic-finder
+
 example.png
 absolute.png
 spectrogram.png

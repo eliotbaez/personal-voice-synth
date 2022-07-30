@@ -17,8 +17,4 @@ Pixel colorFuncDecibelBlackToWhite(fftw_complex z);
 Pixel colorFuncWhiteToBlack(fftw_complex z);
 Pixel colorFuncBlackToWhite(fftw_complex z);
 
-/* Demuxes samples from MUXED, by adding them in groups of CHANNELS and
-   storing the mean in the real part of the corresponding index of arr */
-void meanDemuxSamples(const void *muxed, fftw_complex *arr, size_t samples, int channels, int sampleSize);
-
 #endif /* SPECTROGRAM_H */

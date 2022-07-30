@@ -75,7 +75,7 @@ T = 1/Fs = sample period
 Fmax = Fs/2  
 Fmin = 0  
 Number of bins = number of sample points  
-Bandwidth of each bin = Fmax/N 
+**Bandwidth of each bin = Fmax/N**
 
 ### Normalizing the Fourier transform
 To recover the actual amplitude, divide the Fourier transform by N/2.
@@ -103,6 +103,21 @@ tan(phi) = b / a  =>  phi = arctan(b / a)
 Maybe consider timing each of these methods to see which one is least
 computationally intense? Optimization isn't really a bottleneck right
 now, so just keep it in the back of your mind.
+
+Something else to consider is division by zero. With real world sound
+data, I don't expect to any of the data points to be truly 0.0, but it
+is technically possible for the real part to be zero. This makes the 
+arctangent method unfeasible, or uncertain at best, since I don't know
+whether the standard C atan() properly handles infinity or NaN.
+
+One method to avoid this is to either use acos() or asin(), but there's
+still the remote possibility of the absolute amplitude being zero, thus
+still resulting in zero division. In this case, it might make sense to 
+disregard harmonics with zero amplitude in [Synthesis](#Synthesis), so
+as to not pollute the data with results of NaN calculations.
+
+Conclusion: Avoid atan() method, because it can fail division by zero
+even when the absolute amplitude is nonzero.
 
 ## Synthesis
 

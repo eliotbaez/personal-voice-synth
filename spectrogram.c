@@ -107,54 +107,6 @@ Pixel colorFuncBlackToWhite(fftw_complex z) {
 	return color;
 }
 
-void meanDemuxSamples(const void *muxed, fftw_complex *arr, size_t samples, int channels, int sampleSize) {
-	/* The maximum value of a signed integer of size sampleSize,
-	   multplied by the number of channels to calculate the mean.
-	   Multiplying by channels here saves us one division later.
-	   Division is generally more expensive than multiplication. */
-	double divisor = ((unsigned long)1 << (8 * sampleSize - 1)) * channels;
-
-	switch (sampleSize) {
-	case 1:
-		for (size_t sample = 0; sample < samples; ++sample) {
-			arr[sample][0] = 0.0;
-			for (int c = 0; c < channels; ++c) {
-				arr[sample][0] += ((int8_t*)muxed)[sample * channels + c] / divisor;
-			}
-		}
-		break;
-	case 2:
-		for (size_t sample = 0; sample < samples; ++sample) {
-			arr[sample][0] = 0.0;
-			for (int c = 0; c < channels; ++c) {
-				arr[sample][0] += ((int16_t*)muxed)[sample * channels + c] / divisor;
-			}
-		}
-		break;
-	case 4:
-		for (size_t sample = 0; sample < samples; ++sample) {
-			arr[sample][0] = 0.0;
-			for (int c = 0; c < channels; ++c) {
-				arr[sample][0] += ((int32_t*)muxed)[sample * channels + c] / divisor;
-			}
-		}
-	}
-
-	return;
-
-	#if 0 /* this is under construction */
-	/* generalized version for any number of channels */
-	for (size_t sample = 0; sample < samples; ++sample) { /* each sample */
-		for (int c = 0; c < channels; ++c) { /* each channel within that sample */
-			for (int byte = 0; byte < sampleSize; ++byte) { /* each byte within that channel */
-
-			}
-			muxed[sampleSize * (sample * channels + c)];
-		}
-	}
-	#endif
-}
-
 ImageBuf createSpectrogram(const WAVFile *wp, int samplesPerFrame, Pixel (*colorFunc)(fftw_complex)) {
 	ImageBuf image = {
 		.height = 0,

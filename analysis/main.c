@@ -20,6 +20,11 @@
 /* 44100 samples = 1 second */
 
 
+/*
+ * TODO:
+ * Check if WIDTH is greater than the total samples in the sound file
+ */
+
 int main(int argc, char **argv) {
 	int height, width;
 	if (argc == 4) {
