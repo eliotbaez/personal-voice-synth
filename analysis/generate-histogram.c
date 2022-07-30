@@ -14,6 +14,7 @@
 #include "image_io.h"
 #include "graphing.h"
 #include "sound_io.h"
+#include "windowing.h"
 
 
 int main(int argc, char **argv) {
@@ -57,8 +58,12 @@ int main(int argc, char **argv) {
 		in[i][0] = ((int16_t*)(wp->data))[i] / 32768.0;
 		in[i][1] = 0.0;
 	}
-	destroyWAVFile(wp);
-	
+
+	double *wf = malloc(sizeof(double) * width);
+	generateWindowFunction(width, wf, WF_FLATTOP);
+	applyWindowFunction(in, wf, width);
+	free(wf);
+
 	fftw_execute(p);	/* where the fun happens */
 
 	/* "normalize" the output */
