@@ -16,7 +16,7 @@ void generateWindowFunction(size_t N, double *coefs, int windowFunction);
 
 /* generates a window function and stores it in coefs, which is assumed
    to be of size N. The window function is scaled to compensate for
-   attenuation. */
+   attenuation of amplitude. */
 void generateNormalizedWindowFunction(size_t N, double *coefs, int windowFunction);
 
 /* applies the window function WF to DATA, storing the result in DATA. */

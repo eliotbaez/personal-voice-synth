@@ -60,7 +60,7 @@ int main(int argc, char **argv) {
 	}
 
 	double *wf = malloc(sizeof(double) * width);
-	generateWindowFunction(width, wf, WF_FLATTOP);
+	generateNormalizedWindowFunction(width, wf, WF_FLATTOP);
 	applyWindowFunction(in, wf, width);
 	free(wf);
 

@@ -43,16 +43,17 @@ void generateWindowFunction(size_t N, double *coefs, int windowFunction) {
  * interval and divided by the interval. Should I have used root mean 
  * square instead? Maybe. Either way, these are wrong. 
  */
+#define FLATTOP_NORMALIZE (4.6)
 void generateNormalizedWindowFunction(size_t N, double *coefs, int windowFunction) {
 	switch (windowFunction) {
 	case WF_FLATTOP:
 		for (int i = 0; i < N; ++i) {
 			const double a[5] = {
-				4.63867181838 * 0.21557895,
-				4.63867181838 * 0.41663158,
-				4.63867181838 * 0.277263158,
-				4.63867181838 * 0.083578947,
-				4.63867181838 * 0.006947368
+				FLATTOP_NORMALIZE * 0.21557895,
+				FLATTOP_NORMALIZE * 0.41663158,
+				FLATTOP_NORMALIZE * 0.277263158,
+				FLATTOP_NORMALIZE * 0.083578947,
+				FLATTOP_NORMALIZE * 0.006947368
 			};
 			coefs[i] = a[0]
 				- a[1] * cos(2.0 * M_PI * i / N)
@@ -69,6 +70,7 @@ void generateNormalizedWindowFunction(size_t N, double *coefs, int windowFunctio
 		return;
 	}
 }
+#undef FLATTOP_NORMALIZE
 
 void applyWindowFunction(fftw_complex *data, const double *wf, size_t N) {
 	for (size_t i = 0; i < N; ++i) {

@@ -13,6 +13,8 @@ Harmonic *getHarmonics(double fundamental, fftw_complex const *ft,
 		size_t nSamples, Harmonic *harmonics, int nHarmonics,
 		double relativeMargin, uint32_t sampleRate) {
 	/* 
+	 * TODO:
+	 *
 	 * It's currently 2 in the morning and for whatever reason, the
 	 * harmonics in the debug text only line up properly if I divide by
 	 * 2 here first. I don't know why and I'm too tired to find out.

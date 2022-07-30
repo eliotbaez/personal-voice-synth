@@ -9,7 +9,9 @@ generate-spectrogram: analysis/generate-spectrogram.c spectrogram.c graphing.c i
 harmonic-finder: analysis/harmonic-finder.c sound_io.c harmonics.c
 	gcc -o harmonic-finder analysis/harmonic-finder.c sound_io.c harmonics.c -lm -lfftw3 -I.
 
-all: generate-histogram generate-spectrogram harmonic-finder
+calibration/correction-factor: calibration/correction-factor.c sound_io.c windowing.c
+	gcc -o calibration/correction-factor calibration/correction-factor.c sound_io.c windowing.c -I. -lm -lfftw3
+all: generate-histogram generate-spectrogram harmonic-finder calibration/correction-factor
 
 clean:
 	rm -f generate-histogram
