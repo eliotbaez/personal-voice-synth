@@ -8,13 +8,16 @@
 #include "sound_io.h"
 #include "windowing.h"
 
+/* may be true or false */
+#define USE_NORMALIZED_WINDOWFUNCTION 1
+
 #define max(a, b) ((a) > (b) ? (a) : (b))
 
 int main(int argc, char **argv) {
 	const int width = 8192;
 	
 	if (argc != 1) {
-		fprintf(stderr, "%s takes no arguments\n");
+		fprintf(stderr, "%s takes no arguments\n", argv[0]);
 		return EXIT_FAILURE;
 	}
 	FILE *tones = fopen("sampletones.txt", "rt");
@@ -44,8 +47,14 @@ int main(int argc, char **argv) {
 	p = fftw_plan_dft_1d(width, in, out, FFTW_FORWARD, FFTW_MEASURE);
 	
 	double *wf = malloc(sizeof(double) * width);
+
+	#if USE_NORMALIZED_WINDOWFUNCTION
+	generateNormalizedWindowFunction(width, wf, WF_FLATTOP);
+	fprintf(stderr, "Using normalized Flat Top window function\n\n");
+	#else
 	generateWindowFunction(width, wf, WF_FLATTOP);
 	fprintf(stderr, "Using Flat Top window function\n\n");
+	#endif
 
 	double *measuredAmplitudes = malloc(sizeof(double) * fileCount);
 	double *knownAmplitudes = malloc(sizeof(double) * fileCount);
@@ -100,7 +109,12 @@ int main(int argc, char **argv) {
 		measuredAmplitudes[i] = peakAmplitude;
 		destroyWAVFile(wp);
 	}
+
 	free(wf);
+	fftw_destroy_plan(p);
+	fftw_free(in);
+	fftw_free(out);
+	fclose(tones);
 
 	/* data time */
 	{
@@ -117,10 +131,6 @@ int main(int argc, char **argv) {
 		fprintf(stderr, "Multiply your correction factor by the second one.\n");
 	}
 	
-	fftw_destroy_plan(p);
-	fftw_free(in);
-	fftw_free(out);
-	fclose(tones);
 	free(measuredAmplitudes);
 	free(knownAmplitudes);
 

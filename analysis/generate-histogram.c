@@ -54,8 +54,9 @@ int main(int argc, char **argv) {
 	p = fftw_plan_dft_1d(width, in, out, FFTW_FORWARD, FFTW_ESTIMATE);
 
 	/* populate the in array */
+	meanDemuxSamples(wp->data, in, width,
+		wp->header.channels, wp->header.bitsPerSample / 8);
 	for (int i = 0; i < width; ++i) {
-		in[i][0] = ((int16_t*)(wp->data))[i] / 32768.0;
 		in[i][1] = 0.0;
 	}
 

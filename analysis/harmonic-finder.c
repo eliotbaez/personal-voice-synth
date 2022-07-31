@@ -3,6 +3,7 @@
 
 #include "sound_io.h"
 #include "harmonics.h"
+#include "windowing.h"
 // #include "spectrogram.h" /* meanDemuxSamples */
 
 
@@ -46,7 +47,14 @@ int main(int argc, char **argv) {
 	/* populate the in array */
 	meanDemuxSamples(wp->data, in, samples,
 		wp->header.channels, wp->header.bitsPerSample / 8);
-	destroyWAVFile(wp);
+	for (int i = 0; i < samples; ++i) {
+		in[i][1] = 0.0;
+	}
+
+	double *wf = malloc(sizeof(double) * samples);
+	generateNormalizedWindowFunction(samples, wf, WF_FLATTOP);
+	applyWindowFunction(in, wf, samples);
+	free(wf);
 	
 	fftw_execute(p);	/* where the fun happens */
 
@@ -57,8 +65,7 @@ int main(int argc, char **argv) {
 	}
 
 	/* do the harmonic finding */
-	Harmonic *hp;
-	hp = getHarmonics(fundamental, out, samples, hp, -1, 1.0, wp->header.sampleRate);
+	Harmonic *hp = getHarmonics(fundamental, out, samples, NULL, -1, 2, wp->header.sampleRate);
 
 	/* output useful info */
 	printHarmonicList(hp, -1, true);
@@ -67,6 +74,7 @@ int main(int argc, char **argv) {
 	fftw_destroy_plan(p);
 	fftw_free(in);
 	fftw_free(out);
+	destroyWAVFile(wp);
 
 	return EXIT_SUCCESS;
 }

@@ -41,7 +41,8 @@ void destroyWAVFile(WAVFile *wp);
 void fprintWAVHeader(FILE *fp, WAVFile *wp);
 
 /* Demuxes samples from MUXED, by adding them in groups of CHANNELS and
-   storing the mean in the real part of the corresponding index of arr */
+   storing the mean in the real part of the corresponding index of arr.
+   THIS FUNCTION DOES NOT INITIALIZE THE IMAGINARY PART. */
 void meanDemuxSamples(const void *muxed, fftw_complex *arr, size_t samples, int channels, int sampleSize);
 
 #endif /* SOUND_IO_H */

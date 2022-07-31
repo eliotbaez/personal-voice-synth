@@ -9,31 +9,16 @@
 
 #include "harmonics.h"
 
+#define max(a, b) ((a) > (b) ? (a) : (b))
+#define absmax(a, b) ((fabs(a) > fabs(b) ? (a) : (b)))
+
 Harmonic *getHarmonics(double fundamental, fftw_complex const *ft,
 		size_t nSamples, Harmonic *harmonics, int nHarmonics,
-		double relativeMargin, uint32_t sampleRate) {
-	/* 
-	 * TODO:
-	 *
-	 * It's currently 2 in the morning and for whatever reason, the
-	 * harmonics in the debug text only line up properly if I divide by
-	 * 2 here first. I don't know why and I'm too tired to find out.
-	 * 
-	 * I wanna say it's because the number of usable bins is half the
-	 * number of samples (the second half of the DFT is negative
-	 * frequencies, which are redundant data in this case), and the
-	 * width of the bin is the sample rate divided by the number of
-	 * bins. That sounds intuitive, so I think I just misread my notes.
-	 * I'll review this tomorrow after I've slept.
-	 */
-	nSamples /= 2;
-
+		int searchMargin, uint32_t sampleRate) {
 	/* bandwidth in hertz encompassed by a single bin */
-	double binWidth = sampleRate / 2.0 / nSamples;
-	/* Half the width of our interval of integration */
-	double margin = fundamental * relativeMargin / 2.0;
+	double binWidth = (double)sampleRate / (double)nSamples;
 	/* the maximum harmonic that we can measure */
-	int maxHarmonic = (sampleRate / 2.0 - margin) / fundamental;
+	int maxHarmonic = (sampleRate / 2.0 - searchMargin * binWidth) / fundamental;
 
 	/* 
 	 * Here we will store all the harmonics we measure within this
@@ -49,28 +34,24 @@ Harmonic *getHarmonics(double fundamental, fftw_complex const *ft,
 	allHarmonics[0].amplitude = hypot(ft[0][0], ft[0][1]);
 	allHarmonics[0].phase = 0.0;
 
-	/* 
-	 * Vector calculus tells us that the components of the integral of
-	 * vectors are equal to the integrals of the vectors' components.
-	 * This means it's fine to integrate the real and imaginary parts of
-	 * the Fourier transform separately, without angering the math gods.
-	 */
 	for (int h = 1; h <= maxHarmonic; ++h) {
-		/* we will be integrating onto these */
-		double im = 0.0, re = 0.0;
+		/* check to the sides of the bin that should contain the target
+		   frequency, and find which one has the max amplitude. Use that
+		   to calculate amplitude and phase. */
+		double peakAmplitude = 0.0;
+		fftw_complex peakComplex = {0.0, 0.0};
+		int centralBin = (int)round(fundamental * h / binWidth);
+		int peakBin = centralBin;
 
-		/* bounds of integration, in Hertz*/
-		double lower, upper;
-		lower = fundamental * h - margin;
-		upper = fundamental * h + margin;
-		for (int a = lower / binWidth, b = upper / binWidth; a < b; ++a) {
-			re += ft[a][0];
-			im += ft[a][1];
+		for (int x = -searchMargin; x <= searchMargin; ++x) {
+			double magnitude = hypot(ft[centralBin + x][0], ft[centralBin + x][1]);
+			peakAmplitude = max(peakAmplitude, magnitude);
+			peakComplex[0] = absmax(peakComplex[0], ft[centralBin + x][0]);
+			peakComplex[1] = absmax(peakComplex[1], ft[centralBin + x][1]);
 		}
 
-		allHarmonics[h].amplitude = hypot(re, im);
-		allHarmonics[h].phase = acos(re / allHarmonics[h].amplitude);
-		// printf("Harmonic %d: bounded by (%lf, %lf)\n", h, lower, upper);
+		allHarmonics[h].amplitude = peakAmplitude;
+		allHarmonics[h].phase = atan2(peakComplex[1], peakComplex[0]);
 	}
 
 	if (nHarmonics < 0) {
@@ -114,6 +95,8 @@ void printHarmonicList(Harmonic *harmonics, int n, bool csvFormat) {
 			printf(format, i, harmonics[i].amplitude, harmonics[i].phase);
 		}
 	}
-	end:
+
 	return;
 }
+
+#undef max

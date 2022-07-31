@@ -19,9 +19,8 @@ typedef struct {
  * Harmonic objects pointed to by HARMONICS. The 0th harmonic will
  * always represent the DC offset of the signal.
  * There are NSAMPLES data points in FT.
- * RELATIVEMARGIN is the proportion of the space between harmonics that
- * will also be measured to find the amplitude, with 1.0 meaning that
- * the bounds of integration will FUNDAMENTAL/2 Hz in either direction.
+ * SEARCHMARGIN is the number of bins to search in either direction to
+ * calculate the peak amplitude.
  * If NHARMONICS < 0, then will return a pointer to an array of all
  * possible harmonics measurable from the sample given. In this case,
  * the pointer must be free()'d afterward. Otherwise, returns NULL.
@@ -34,7 +33,7 @@ Harmonic *getHarmonics(
 	size_t nSamples,
 	Harmonic *harmonics,
 	int nHarmonics,
-	double relativeMargin,
+	int searchMargin,
 	uint32_t sampleRate
 );
 

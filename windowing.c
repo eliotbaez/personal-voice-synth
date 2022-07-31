@@ -35,15 +35,16 @@ void generateWindowFunction(size_t N, double *coefs, int windowFunction) {
 }
  
 /* 
- * FIXME:
- * 
- * The coefficients in this function are WRONG. I got them by
- * calculating the average value of the flat top window function on a
- * graphing calculator. I just integrated the function over its intended
- * interval and divided by the interval. Should I have used root mean 
- * square instead? Maybe. Either way, these are wrong. 
+ * NOTE:
+ *
+ * If for whatever reason you doubt the accuracy of this correction 
+ * factor, you can check using one of two methods. The first is by using
+ * a calculus tool to approximate the mean value of the window function 
+ * from 0 to N. The second is by changing it and checking either
+ * graphically with the generate-histogram utility or numerically with
+ * calibration/correction-factor utility.
  */
-#define FLATTOP_NORMALIZE (4.6)
+#define FLATTOP_NORMALIZE (4.6395674206)
 void generateNormalizedWindowFunction(size_t N, double *coefs, int windowFunction) {
 	switch (windowFunction) {
 	case WF_FLATTOP:
