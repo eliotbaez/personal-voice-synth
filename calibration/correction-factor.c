@@ -46,37 +46,23 @@ int main(int argc, char **argv) {
 	in = (fftw_complex*) fftw_malloc(sizeof(fftw_complex) * width);
 	out = (fftw_complex*) fftw_malloc(sizeof(fftw_complex) * width);
 	p = fftw_plan_dft_1d(width, in, out, FFTW_FORWARD, FFTW_MEASURE);
-	
 	double *wf = malloc(sizeof(double) * width);
 
 	/* determine which window function to use */
-	/* lowercase-ize the window function name */
-	if (argc == 2) {
-		for (int i = 0; argv[1][i] != 0; ++i) {
-			argv[1][i] = tolower(argv[1][i]);
-		}
-	}
-
 	int wfType;
 	const char *wfName;
 	if (argc == 1) {
+		/* default to rectangular */
 		wfType = WF_RECTANGULAR;
-		wfName = "Rectangular";
-	} else if (strcmp(argv[1], "hann") == 0) {
-		wfType = WF_HANN;
-		wfName = "Hann";
-	} else if (strcmp(argv[1], "hamming") == 0) {
-		wfType = WF_HAMMING;
-		wfName = "Hamming";
-	} else if (strcmp(argv[1], "flattop") == 0) {
-		wfType = WF_FLATTOP;
-		wfName = "Flattop";
-	} else if (strcmp(argv[1], "rectangular") == 0) {
-		wfType = WF_RECTANGULAR;
-		wfName = "Rectangular";
+		wfName = WINDOWFUNCTION_NAMES[WF_RECTANGULAR];
 	} else {
-		wfType = WF_RECTANGULAR;
-		fprintf(stderr, "Unrecognized window function %s, using Rectangular instead\n", argv[1]);
+		wfType = getWindowFunction(argv[1]);
+		/* also default to rectangular in case of unrecognized name */
+		if (wfType == -1) {
+			wfType = WF_RECTANGULAR;
+			fprintf(stderr, "Defaulting to Rectangular window\n");
+		}
+		wfName = WINDOWFUNCTION_NAMES[wfType];
 	}
 
 	#if USE_NORMALIZED_WINDOWFUNCTION

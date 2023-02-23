@@ -1,11 +1,20 @@
 #include <stdlib.h>
 #include <math.h>
+#include <string.h>
+#include <ctype.h>
 
 #include "windowing.h"
 
 #ifndef M_PI
 #define M_PI 3.1415926535897932384626433832795
 #endif
+
+const char *WINDOWFUNCTION_NAMES[4] = {
+	"Rectangular",
+	"Flat-top",
+	"Hann",
+	"Hamming"
+};
 
 void generateWindowFunction(size_t N, double *coefs, int windowFunction) {
 	switch (windowFunction) {
@@ -45,6 +54,35 @@ void generateWindowFunction(size_t N, double *coefs, int windowFunction) {
 	}
 }
  
+int getWindowFunction(const char *name) {
+	char *mName = malloc(1 + strlen(name));
+	strcpy(mName, name);
+
+	/* Make name letter case consistent with defined names */
+	for (int i = 0; mName[i] != '\0'; ++i) {
+		mName[i] = tolower(mName[i]);
+	}
+	mName[0] = toupper(mName[0]);
+
+	int wfType;
+	if (strcmp(mName, WINDOWFUNCTION_NAMES[WF_HANN]) == 0) {
+		wfType = WF_HANN;
+	} else if (strcmp(mName, WINDOWFUNCTION_NAMES[WF_HAMMING]) == 0) {
+		wfType = WF_HAMMING;
+	} else if (strcmp(mName, WINDOWFUNCTION_NAMES[WF_FLATTOP]) == 0
+			|| strcmp(mName, "Flattop") == 0) {
+		wfType = WF_FLATTOP;
+	} else if (strcmp(mName, WINDOWFUNCTION_NAMES[WF_RECTANGULAR]) == 0) {
+		wfType = WF_RECTANGULAR;
+	} else {
+		wfType = -1;
+		fprintf(stderr, "Unrecognized window function \"%s\"\n", name);
+	}
+
+	free(mName);
+	return wfType;
+}
+
 /* 
  * NOTE:
  *
@@ -58,7 +96,6 @@ void generateWindowFunction(size_t N, double *coefs, int windowFunction) {
 #define FLATTOP_NORMALIZE (4.6395674206)
 #define HANN_NORMALIZE (2)
 #define HAMMING_NORMALIZE (46.0/25.0)
-
 void generateNormalizedWindowFunction(size_t N, double *coefs, int windowFunction) {
 	switch (windowFunction) {
 	case WF_FLATTOP:

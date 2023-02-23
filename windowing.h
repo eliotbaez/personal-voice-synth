@@ -16,6 +16,9 @@ enum WindowFunctions {
    WF_HAMMING
 };
 
+extern const char *WINDOWFUNCTION_NAMES[4];
+int getWindowFunction(const char *name);
+
 /* generates a window function and stores it in coefs, which is assumed
    to be of size N. */
 void generateWindowFunction(size_t N, double *coefs, int windowFunction);
