@@ -74,8 +74,26 @@ Fs = sample rate
 T = 1/Fs = sample period  
 Fmax = Fs/2  
 Fmin = 0  
-Number of bins = number of sample points  
-**Bandwidth of each bin = Fmax/N**
+Number of bins = number of sample points
+
+**Bandwidth of each FFT bin = Fmax/N**
+
+### Interpretation of Cepstrum analysis
+I have no idea what I'm doing, so I'll use this section to write notes
+to myself to remember how to understand what I intend to do.
+
+Sampling frequency = Fs  
+Sample period T = 1/Fs  
+Each sample in time signal is of width T  
+
+Window width = N  
+Each bin in FFT of time signal is of width df = Fs/N  
+(Inverse of this is N/Fs)
+
+Each bin in the cepstrum is of width (N/Fs)/N = T
+Therefore each cepstrum bin expresses period in terms of sample period
+
+**Bandwidth of each cepstrum bin is T**
 
 ### Normalizing the Fourier transform
 To recover the actual amplitude, divide the Fourier transform by N/2.

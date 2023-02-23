@@ -18,18 +18,29 @@
 
 
 int main(int argc, char **argv) {
-	int height, width;
+	int height, width, wfType;
 	if (argc == 4) {
 		width = atoi(argv[2]);
 		height = atoi(argv[3]);
+		wfType = -1;
+	} else if (argc == 5) {
+		width = atoi(argv[2]);
+		height = atoi(argv[3]);
+		wfType = getWindowFunction(argv[4]);
 	} else {
-		fprintf(stderr, "usage: %s WAVFILE WIDTH HEIGHT\n", argv[0]);
+		fprintf(stderr, "usage: %s WAVFILE WIDTH HEIGHT [WINDOWFUNC]\n", argv[0]);
 		return EXIT_FAILURE;
 	}
 
 	if (width < 1 || height < 1) {
 		fprintf(stderr, "HEIGHT and WIDTH must be greater than 0\n");
 		return EXIT_FAILURE;
+	}
+	if (wfType < 0) {
+		fprintf(stderr, "Defaulting to Rectangular window.\n");
+		wfType = WF_RECTANGULAR;
+	} else {
+		fprintf(stderr, "Using %s window.\n", WINDOWFUNCTION_NAMES[wfType]);
 	}
 
 	WAVFile *wp = loadWAVFile(argv[1]);
@@ -61,7 +72,7 @@ int main(int argc, char **argv) {
 	}
 
 	double *wf = malloc(sizeof(double) * width);
-	generateNormalizedWindowFunction(width, wf, WF_FLATTOP);
+	generateNormalizedWindowFunction(width, wf, wfType);
 	applyWindowFunction(in, wf, width);
 	free(wf);
 
