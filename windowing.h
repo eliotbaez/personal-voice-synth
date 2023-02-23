@@ -5,9 +5,15 @@
 #ifndef WINDOWING_H
 #define WINDOWING_H
 
+/* TODO: 
+   Find a way to add Gaussian window function
+   (Normalization might be an issue for this one) */
+
 enum WindowFunctions {
 	WF_RECTANGULAR,
-	WF_FLATTOP
+	WF_FLATTOP,
+   WF_HANN,
+   WF_HAMMING
 };
 
 /* generates a window function and stores it in coefs, which is assumed

@@ -2,6 +2,7 @@
 #include <math.h>
 #include <string.h>
 #include <stdlib.h>
+#include <ctype.h>
 
 #include <fftw3.h>
 
@@ -16,8 +17,8 @@
 int main(int argc, char **argv) {
 	const int width = 8192;
 	
-	if (argc != 1) {
-		fprintf(stderr, "%s takes no arguments\n", argv[0]);
+	if (argc > 2) {
+		fprintf(stderr, "Usage: %s [hann|hamming|flattop|rectangular]\n", argv[0]);
 		return EXIT_FAILURE;
 	}
 	FILE *tones = fopen("sampletones.txt", "rt");
@@ -48,12 +49,42 @@ int main(int argc, char **argv) {
 	
 	double *wf = malloc(sizeof(double) * width);
 
+	/* determine which window function to use */
+	/* lowercase-ize the window function name */
+	if (argc == 2) {
+		for (int i = 0; argv[1][i] != 0; ++i) {
+			argv[1][i] = tolower(argv[1][i]);
+		}
+	}
+
+	int wfType;
+	const char *wfName;
+	if (argc == 1) {
+		wfType = WF_RECTANGULAR;
+		wfName = "Rectangular";
+	} else if (strcmp(argv[1], "hann") == 0) {
+		wfType = WF_HANN;
+		wfName = "Hann";
+	} else if (strcmp(argv[1], "hamming") == 0) {
+		wfType = WF_HAMMING;
+		wfName = "Hamming";
+	} else if (strcmp(argv[1], "flattop") == 0) {
+		wfType = WF_FLATTOP;
+		wfName = "Flattop";
+	} else if (strcmp(argv[1], "rectangular") == 0) {
+		wfType = WF_RECTANGULAR;
+		wfName = "Rectangular";
+	} else {
+		wfType = WF_RECTANGULAR;
+		fprintf(stderr, "Unrecognized window function %s, using Rectangular instead\n", argv[1]);
+	}
+
 	#if USE_NORMALIZED_WINDOWFUNCTION
-	generateNormalizedWindowFunction(width, wf, WF_FLATTOP);
-	fprintf(stderr, "Using normalized Flat Top window function\n\n");
+	generateNormalizedWindowFunction(width, wf, wfType);
+	fprintf(stderr, "Using normalized %s window function.\n\n", wfName);
 	#else
 	generateWindowFunction(width, wf, WF_FLATTOP);
-	fprintf(stderr, "Using Flat Top window function\n\n");
+	fprintf(stderr, "Using %s window function.\n\n", wfName);
 	#endif
 
 	double *measuredAmplitudes = malloc(sizeof(double) * fileCount);

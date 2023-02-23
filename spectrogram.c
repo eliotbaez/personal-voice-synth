@@ -107,6 +107,12 @@ Pixel colorFuncBlackToWhite(fftw_complex z) {
 	return color;
 }
 
+/* TODO:
+   This function has some important error messages/suggestions that
+   would have been super useful in debugging other parts of the system.
+   Consider moving them to the code responsible for loading WAV files?
+*/
+
 ImageBuf createSpectrogram(const WAVFile *wp, int samplesPerFrame, Pixel (*colorFunc)(fftw_complex)) {
 	ImageBuf image = {
 		.height = 0,

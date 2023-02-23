@@ -3,6 +3,7 @@ test
 generate-histogram
 generate-spectrogram
 harmonic-finder
+calibration/correction-factor
 
 example.png
 absolute.png

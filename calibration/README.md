@@ -31,3 +31,8 @@ Where `percent` is the amplitude expressed as an integer percentage of
 1.
 
 See the included sampletones.txt for more examples.
+
+It is recommended that you use more than 3 test tones for calibration
+of most window functions, due to scalloping loss. The flat-top window
+shouldn't need more than 2 or 3 test tones, but do be weary of this when
+calibrating other window functions.

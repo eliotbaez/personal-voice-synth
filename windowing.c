@@ -10,19 +10,30 @@
 void generateWindowFunction(size_t N, double *coefs, int windowFunction) {
 	switch (windowFunction) {
 	case WF_FLATTOP:
+		const double a[5] = {
+			0.21557895,
+			0.41663158,
+			0.277263158,
+			0.083578947,
+			0.006947368
+		};
 		for (int i = 0; i < N; ++i) {
-			const double a[5] = {
-				0.21557895,
-				0.41663158,
-				0.277263158,
-				0.083578947,
-				0.006947368
-			};
 			coefs[i] = a[0]
 				- a[1] * cos(2.0 * M_PI * i / N)
 				+ a[2] * cos(4.0 * M_PI * i / N)
 				- a[3] * cos(6.0 * M_PI * i / N)
 				+ a[4] * cos(8.0 * M_PI * i / N);
+		}
+		return;
+	case WF_HAMMING: 
+		const double a0 = 25.0/46.0;
+		for (int i = 0; i < N; ++i) {
+			coefs[i] = a0 - (1 - a0) * cos(2 * M_PI * i / N);
+		}
+		return;
+	case WF_HANN:
+		for (int i = 0; i < N; ++i) {
+			coefs[i] = 0.5 - 0.5 * cos(2 * M_PI * i / N);
 		}
 		return;
 	case WF_RECTANGULAR:
@@ -45,6 +56,9 @@ void generateWindowFunction(size_t N, double *coefs, int windowFunction) {
  * calibration/correction-factor utility.
  */
 #define FLATTOP_NORMALIZE (4.6395674206)
+#define HANN_NORMALIZE (2)
+#define HAMMING_NORMALIZE (46.0/25.0)
+
 void generateNormalizedWindowFunction(size_t N, double *coefs, int windowFunction) {
 	switch (windowFunction) {
 	case WF_FLATTOP:
@@ -62,7 +76,18 @@ void generateNormalizedWindowFunction(size_t N, double *coefs, int windowFunctio
 				- a[3] * cos(6.0 * M_PI * i / N)
 				+ a[4] * cos(8.0 * M_PI * i / N);
 		}
-		break;
+		return;
+	case WF_HAMMING:
+		const double a0 = 25.0/46.0;
+		for (int i = 0; i < N; ++i) {
+			coefs[i] = 1.0 - (HAMMING_NORMALIZE - 1.0) * cos(2 * M_PI * i / N);
+		}
+		return;
+	case WF_HANN:
+		for (int i = 0; i < N; ++i) {
+			coefs[i] = HANN_NORMALIZE * 0.5 - HANN_NORMALIZE * 0.5 * cos(2 * M_PI * i / N);
+		}
+		return;
 	case WF_RECTANGULAR:
 	default:
 		for (int i = 0; i < N; ++i) {
