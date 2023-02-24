@@ -10,7 +10,7 @@
 #define SPECTROGRAM_H
 
 /* expects a mono WAV file. Prefer powers of 2 for samplesPerFrame */
-ImageBuf createSpectrogram(const WAVFile * wp, int samplesPerFrame, Pixel (*colorFunc)(fftw_complex));
+ImageBuf createSpectrogram(const WAVFile * wp, int samplesPerFrame, Pixel (*colorFunc)(fftw_complex), int windowFunction);
 
 Pixel thresholdBlack(fftw_complex z);
 Pixel colorFuncDecibelBlackToWhite(fftw_complex z);

@@ -16,6 +16,7 @@
 #include "graphing.h"
 #include "sound_io.h"
 #include "spectrogram.h"
+#include "windowing.h"
 
 double decibelsOfNormalized(double a) {
 	#if 0
@@ -113,7 +114,7 @@ Pixel colorFuncBlackToWhite(fftw_complex z) {
    Consider moving them to the code responsible for loading WAV files?
 */
 
-ImageBuf createSpectrogram(const WAVFile *wp, int samplesPerFrame, Pixel (*colorFunc)(fftw_complex)) {
+ImageBuf createSpectrogram(const WAVFile *wp, int samplesPerFrame, Pixel (*colorFunc)(fftw_complex), int windowFunction) {
 	ImageBuf image = {
 		.height = 0,
 		.width = 0,
@@ -138,6 +139,9 @@ ImageBuf createSpectrogram(const WAVFile *wp, int samplesPerFrame, Pixel (*color
 	}
 	/* we will need to do the transform multuple times... */
 	p = fftw_plan_dft_1d(samplesPerFrame, in, out, FFTW_FORWARD, FFTW_MEASURE);
+	/* we will also use the window function multiple times! */
+	double *wf = malloc(samplesPerFrame * sizeof(double));
+	generateNormalizedWindowFunction(samplesPerFrame, wf, windowFunction);
 
 	/* create an image */
 	size_t totalFrames;
@@ -168,6 +172,7 @@ ImageBuf createSpectrogram(const WAVFile *wp, int samplesPerFrame, Pixel (*color
 		/* demux the samples and place their mean in the in array */
 		meanDemuxSamples(wp->data + frame * samplesPerFrame, in, 
 			samplesPerFrame, wp->header.channels, wp->header.bitsPerSample / 8);
+		applyWindowFunction(in, wf, samplesPerFrame);
 		fftw_execute(p);
 
 		/* "normalize" the output */
@@ -182,6 +187,7 @@ ImageBuf createSpectrogram(const WAVFile *wp, int samplesPerFrame, Pixel (*color
 			image.rowPtrs[maxFreqBin - frequencyBin - 1][frame] = colorFunc(out[frequencyBin]);
 		}
 	}
+	free(wf);
 	
 	/* and plot our data */
 
