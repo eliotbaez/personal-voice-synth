@@ -16,6 +16,18 @@ phonemes.
 3. The synthesizer. This is the part that uses the voice profile to
 generate actual sounds.
 
+## Project file structure
+
+I'm writing this section to remind myself in the future of how to best
+organize the project's files. As of now, the root directory should only
+contain files relevant to the entire project, like code that will be
+reused across the different components. Code specific to a particular
+component should be confined to that component's subdirectory to avoid
+cluttering the root directory. 
+
+There should also be a README file in every subdirectory explaining its
+purpose and the meaning of all the files in it. 
+
 ## Voice Profiles
 
 A voice profile will be a set of voice samples for the purpose of
