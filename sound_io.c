@@ -33,6 +33,8 @@ static void localEndianify4b(uint32_t *numptr) {
 	*numptr = tmp;
 }
 
+/* FIXME:
+   Are these mislabeled???? */
 static void littleEndianifyWAVHeader(struct WAVHeader *whp) {
 	localEndianify4b(&whp->filesize);
 	localEndianify4b(&whp->formatDataLength);
@@ -85,6 +87,30 @@ WAVFile *loadWAVFile(const char *filename) {
 	fread(wp->data, wp->header.dataChunkSize, 1, fp);
 	fclose(fp);
 	return wp;
+}
+
+/* please review this code; it's not guaranteed to have any sort of
+   sanity checking or error checking yet */
+int exportWAVFile(const char *filename, const WAVFile *wp) {
+	FILE *fp = fopen(filename, "wb");
+	if (fp == NULL) {
+		fprintf(stderr, "Could not open file ");
+		perror(filename);
+		return -1;
+	}
+
+	WAVFile wf;
+	memcpy(&wf, wp, sizeof(wf));
+	/* now clear to write the file */
+	littleEndianifyWAVHeader(&wf.header);
+	/* consider checking the following return values */
+
+	fwrite(&(wf.header), sizeof(wf.header), 1, fp);
+	fwrite(wf.data, wf.header.dataChunkSize, 1, fp);
+
+	fclose(fp);
+
+	return 0;
 }
 
 void destroyWAVFile(WAVFile *wp) {

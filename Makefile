@@ -11,10 +11,16 @@ harmonic-finder: analysis/harmonic-finder.c sound_io.c harmonics.c windowing.c
 
 calibration/correction-factor: calibration/correction-factor.c sound_io.c windowing.c
 	gcc -o calibration/correction-factor calibration/correction-factor.c sound_io.c windowing.c -I. -lm -lfftw3
-all: generate-histogram generate-spectrogram harmonic-finder calibration/correction-factor
+
+synthesis/synthesize-wave: synthesis/synthesize-wave.c sound_io.c harmonics.c
+	gcc -o synthesize-wave synthesis/synthesize-wave.c sound_io.c harmonics.c -I. -lm -lfftw3
+
+all: generate-histogram generate-spectrogram harmonic-finder calibration/correction-factor synthesis/synthesize-wave
 
 clean:
 	rm -f generate-histogram
 	rm -f generate-spectrogram
 	rm -f harmonic-finder
 	rm -f calibration/correction-factor
+	rm -f synthesis/synthesize-wave
+	rm -f synthesize-wave

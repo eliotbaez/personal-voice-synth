@@ -77,6 +77,41 @@ Harmonic *getHarmonics(double fundamental, fftw_complex const *ft,
 	}
 }
 
+/* TODO: add more error checking, also implement the n<0 case */
+Harmonic *loadHarmonics(const char *filename, int n) {
+	FILE *fp = fopen(filename, "rt");
+	if (fp == NULL) {
+		fprintf(stderr, "Could not open file ");
+		perror(filename);
+		return NULL;
+	}
+
+	if (n < 0) {
+		fprintf(stderr, "Loading all possible harmonics not yet implemented");
+		return NULL;
+	}
+	
+	/* needs negative terminator */
+	Harmonic *hl = calloc((n + 1), sizeof(Harmonic));
+	if (hl == NULL) {
+		fclose(fp);
+		return NULL;
+	}
+	
+	int i = 0;
+	for (i = 0; i < n; ++i) {
+		int r = fscanf(fp, "%*d\t%lf\t%lf\n", &(hl[i].amplitude), &(hl[i].phase));
+		/* yes, we intend to break before ++i */
+		if (r != 2 || r == EOF) break;
+	}
+
+	/* terminate the list */
+	hl[i].amplitude = -1.0;
+	hl[i].phase = 0.0;
+
+	return hl;
+}
+
 void printHarmonicList(Harmonic *harmonics, int n, bool csvFormat) {
 	const char *format;
 	if (!csvFormat) {

@@ -37,6 +37,9 @@ Harmonic *getHarmonics(
 	uint32_t sampleRate
 );
 
+/* loads n harmonics from filename into a Harmonic array */
+Harmonic *loadHarmonics(const char *filename, int n);
+
 /*
  * If n < 0, then will print all Harmonics until a Harmonic with a
  * negative amplitude is found. 

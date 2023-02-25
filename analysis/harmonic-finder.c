@@ -4,8 +4,10 @@
 #include "sound_io.h"
 #include "harmonics.h"
 #include "windowing.h"
-// #include "spectrogram.h" /* meanDemuxSamples */
 
+/* Suggestion:
+   consider using cepstrum to locate the fundamental, instead of
+   relying the user to be in tune */
 
 int main(int argc, char **argv) {
 	int samples;
@@ -52,6 +54,8 @@ int main(int argc, char **argv) {
 	}
 
 	double *wf = malloc(sizeof(double) * samples);
+	/* Because we are taking amplitude measurements, it is highly
+	   recommended that we solely use the flat-top window function. */
 	generateNormalizedWindowFunction(samples, wf, WF_FLATTOP);
 	applyWindowFunction(in, wf, samples);
 	free(wf);

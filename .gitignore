@@ -4,9 +4,13 @@ generate-histogram
 generate-spectrogram
 harmonic-finder
 calibration/correction-factor
+synthesize-wave
 
 example.png
 absolute.png
 spectrogram.png
 .vscode/
 samples/
+
+*.csv
+*.wav

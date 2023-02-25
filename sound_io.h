@@ -38,6 +38,8 @@ typedef struct {
 WAVFile *loadWAVFile(const char *filename);
 void destroyWAVFile(WAVFile *wp);
 
+int exportWAVFile(const char *filename, const WAVFile *wp);
+
 void fprintWAVHeader(FILE *fp, WAVFile *wp);
 
 /* Demuxes samples from MUXED, by adding them in groups of CHANNELS and
