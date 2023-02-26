@@ -28,3 +28,6 @@ clean:
 	rm -f synthesis/synthesize-wave
 	rm -f synthesize-wave
 	rm -f synthesis/generate-diphthongs
+
+clean-csv-data:
+	rm -f *.csv synthesis/*.csv
