@@ -15,7 +15,10 @@ calibration/correction-factor: calibration/correction-factor.c sound_io.c window
 synthesis/synthesize-wave: synthesis/synthesize-wave.c sound_io.c harmonics.c
 	gcc -o synthesize-wave synthesis/synthesize-wave.c sound_io.c harmonics.c -I. -lm -lfftw3
 
-all: generate-histogram generate-spectrogram harmonic-finder calibration/correction-factor synthesis/synthesize-wave
+synthesis/generate-diphthongs: synthesis/diphthongs.c sound_io.c harmonics.c
+	gcc -o synthesis/generate-diphthongs synthesis/diphthongs.c sound_io.c harmonics.c -I. -lm -lfftw3
+
+all: generate-histogram generate-spectrogram harmonic-finder calibration/correction-factor synthesis/synthesize-wave synthesis/generate-diphthongs
 
 clean:
 	rm -f generate-histogram
@@ -24,3 +27,4 @@ clean:
 	rm -f calibration/correction-factor
 	rm -f synthesis/synthesize-wave
 	rm -f synthesize-wave
+	rm -f synthesis/generate-diphthongs

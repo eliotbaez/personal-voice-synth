@@ -5,6 +5,7 @@ generate-spectrogram
 harmonic-finder
 calibration/correction-factor
 synthesize-wave
+synthesis/generate-diphthongs
 
 example.png
 absolute.png
