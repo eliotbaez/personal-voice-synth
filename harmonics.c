@@ -87,7 +87,7 @@ Harmonic *loadHarmonics(const char *filename, int n) {
 	}
 
 	if (n < 0) {
-		fprintf(stderr, "Loading all possible harmonics not yet implemented");
+		fprintf(stderr, "Loading all possible harmonics not yet implemented\n");
 		return NULL;
 	}
 	
